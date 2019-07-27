@@ -1,5 +1,6 @@
 import { reqRegister, reqLogin, reqUpdateUser } from '../api/index';
-import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER } from './action-types';
+import {AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RECEIVE_USER_LIST, RESET_USER} from './action-types';
+import {reqUserList} from "../api";
 
 const authSuccess = (user) => ({ type: AUTH_SUCCESS, data: user })
 const errorMsg = (msg) => ({ type:ERROR_MSG, data:msg })
@@ -7,6 +8,8 @@ const errorMsg = (msg) => ({ type:ERROR_MSG, data:msg })
 const receiveUser = (user) => ({type:RECEIVE_USER, data:user})
 // 重置用户 信息
 const resetUser = (msg)=>({type:RESET_USER, data:msg})
+
+const receiveUserList = (userList) => ({ type: RECEIVE_USER_LIST, data: userList })
 
 export const register = (user) => {
     const {username, password,password2, type} = user;
@@ -79,3 +82,18 @@ export const updateUser = (user) => {
         }
     }
 }
+
+// 获取用户列表的异步 action
+export const getUserList = (type) => {
+    return async dispatch => {
+        // 执行异步 ajax 请求
+        const response = await reqUserList(type);
+        const result = response.data;
+        if( result.code === 0 ) {
+            dispatch(receiveUserList(result));
+        }
+
+    }
+}
+
+
