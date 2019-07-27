@@ -123,6 +123,16 @@ router.get('/user', function (req, res) {
 
 })
 
+// 获取用户列表（根据类型）
+router.get('/userlist', function (req, res) {
+    const {type} = req.query;
+    UserModel.find({type}, filter, function ( err, userDoc ) {
+        res.send({ code: 0, data: userDoc });
+    } )
+
+})
+
+
 module.exports = router;
 
 
