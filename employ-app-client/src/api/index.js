@@ -11,4 +11,5 @@ export const reqLogin = (user) => ajax('/login', user, 'POST');
 // 更新用户接口 /update
 export const reqUpdateUser = (user) => ajax('/update', user, 'POST' );
 
-export const reqUserList = (type) => ajax('/userlist', {type} );
+export const reqUserList = (type) => ajax('/userlist', {type});
+

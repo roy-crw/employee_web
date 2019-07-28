@@ -43,8 +43,10 @@ function userList(state=initUserList, action) {
     }
 }
 
+
 export default combineReducers({
-    user
+    user,
+    userList
 })
 // 外部暴露状态结构： {xxx: 0, yyy: 0}
 

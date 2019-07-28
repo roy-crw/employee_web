@@ -7,3 +7,6 @@
     height: inherit;
 }
 
+.am-card-header-content img {
+    width: 30%;
+}

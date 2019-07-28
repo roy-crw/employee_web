@@ -85,14 +85,14 @@ export const updateUser = (user) => {
 
 // 获取用户列表的异步 action
 export const getUserList = (type) => {
-    return async dispatch => {
+    return async (dispatch) => {
         // 执行异步 ajax 请求
         const response = await reqUserList(type);
         const result = response.data;
         if( result.code === 0 ) {
-            dispatch(receiveUserList(result));
+            // 获取到数据后，进行封装消息。 并派发消息。
+            dispatch(receiveUserList(result.data));
         }
-
     }
 }
 
