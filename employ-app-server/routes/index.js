@@ -129,7 +129,6 @@ router.get('/userlist', function (req, res) {
     UserModel.find({type}, filter, function ( err, userDoc ) {
         res.send({ code: 0, data: userDoc });
     } )
-
 })
 
 
