@@ -14,6 +14,7 @@ import Message from '../message/message';
 import Personal from '../personal/personal';
 import NotFound from '../../components/not-found/not-found';
 import NavFooter from '../../components/nav-footer/nav-footer';
+import Chat from '../../containers/chat/chat';
 
 import {NavBar} from 'antd-mobile';
 
@@ -129,6 +130,7 @@ class Main extends Component {
                     }
                     <Route path={'/laobaninfo'} component={LaobanInfo} />
                     <Route path={'/dasheninfo'} component={DashenInfo} />
+                    <Route path={'/chat/:userid'} component={Chat} />
                     <Route componen={NotFound} />
                 </Switch>
                 { currentNav ? <NavFooter  navList={navList} /> : null }

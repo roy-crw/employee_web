@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const UserModel = require("../db/models").UserModel;
+const { UserModel, ChatModel } = require("../db/models");
 
 const encodeMd5 = require('blueimp-md5');
 const filter = {password: 0, __v: 0}; // 查询时不返回该属性，从而保密
@@ -62,7 +62,6 @@ router.post('/register', function (req, res) {
     })
 
 })
-
 
 // 登录路由
 router.post('/login', function (req, res) {
@@ -129,6 +128,41 @@ router.get('/userlist', function (req, res) {
     UserModel.find({type}, filter, function ( err, userDoc ) {
         res.send({ code: 0, data: userDoc });
     } )
+})
+
+// 获取当前用户所有相关聊天信息列表
+router.post('/msglist', function (req, res) {
+
+    const userid = req.cookies.userid;
+    
+    UserModel.find( function (err, userDocs) {
+        // 返回 所有 users 姓名、头像资料
+        const users = {};
+        userDocs.forEach( doc => {
+            users[doc._id] = { username: doc.username, header: doc.header }
+        } )
+
+        // 找到与该 userid 进行的对话记录，其中根据chat_id 判断是否是同个对话
+        ChatModel.find({ '$or': [{ from: userid },{ to: userid }] }, filter, function (err, chatMsgs) {
+            // 将之前的数据进行组合后返回。
+            res.send({ code: 0, data: { users, chatMsgs } })
+        } )
+
+    } )
+
+})
+
+// 将指定消息修改为已读状态
+router.post('/readmsg', function (req, res) {
+    const from = req.body.from;
+    const to = req.cookies.userid;
+
+    // 根据 指定的 from 和 to 的 id ， 将所有未读消息改为已读。
+    ChatModel.update({ from, to, read: false }, { read: true }, { multi: true }, function (err, chatDoc) {
+        // nModified 属性代表 变更的记录数量。
+        res.send({ code: 0, data: chatDoc.nModified });
+    })
+
 })
 
 

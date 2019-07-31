@@ -26,7 +26,19 @@ const userSchema = mongoose.Schema({
 // 定义 Model（与集合对应的模型）
 const UserModel = mongoose.model('user', userSchema);
 
+const chatSchema = mongoose.Schema({
+    from:{ type:String, required:true },
+    to:{ type:String, required:true },
+    chat_id:{ type:String, required:true }, // 根据 from 与 to 生成的加密串, 唯一标识同一聊天记录。
+    content:{ type:String, required:true }, // 每次对话的内容。
+    read: { type:Boolean, default:false }, // 标识是否已读。
+    create_time: { type:Number }  // 创建时间。
+});
+
+const ChatModel = mongoose.model('chat', chatSchema);
+
 // 对外暴露 Model
 exports.UserModel = UserModel;
 
+exports.ChatModel = ChatModel;
 
