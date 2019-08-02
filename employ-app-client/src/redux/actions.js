@@ -1,6 +1,21 @@
 import { reqRegister, reqLogin, reqUpdateUser } from '../api/index';
 import {AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RECEIVE_USER_LIST, RESET_USER} from './action-types';
 import {reqUserList} from "../api";
+import io from 'socket.io-client';
+
+/*
+* 创建和保持连接对象
+* */
+function initIO() {
+    if( !io.socket ) { // 没有连接
+        io.socket = io( 'ws://localhost:4000' );
+    }
+    // 接收到 server emit 方法发送过来的客户端
+    io.socket.on('receiveMsg', function (data) {
+        console.log('连接并接受到消息:', data)
+    })
+
+}
 
 const authSuccess = (user) => ({ type: AUTH_SUCCESS, data: user })
 const errorMsg = (msg) => ({ type:ERROR_MSG, data:msg })
@@ -94,6 +109,18 @@ export const getUserList = (type) => {
             dispatch(receiveUserList(result.data));
         }
     }
+}
+
+export const sendMsg = ({ from, to, content }) => {
+
+    return (dispatch) => {
+        console.log({ from , to , content })
+        // 发送消息的时候才进行连接， 其他时候离线也可以
+        initIO();
+        // 发消息
+        io.socket.emit('sendMsg', {from, to, content});
+    }
+
 }
 
 
