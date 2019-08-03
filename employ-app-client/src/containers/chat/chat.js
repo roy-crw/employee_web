@@ -29,6 +29,9 @@ class Chat extends Component {
     }
 
     render() {
+
+
+
         return (
             <div id={'chat-page'}>
                 <NavBar>aa</NavBar>

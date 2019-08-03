@@ -1,7 +1,8 @@
 import { reqRegister, reqLogin, reqUpdateUser } from '../api/index';
-import {AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RECEIVE_USER_LIST, RESET_USER} from './action-types';
-import {reqUserList} from "../api";
+import {reqUserList, reqMsgList, reqReadMsg } from "../api";
 import io from 'socket.io-client';
+import {AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RECEIVE_USER_LIST, RESET_USER,
+    RECEIVE_MEG_LIST, RECEIVE_MSG} from './action-types';
 
 /*
 * 创建和保持连接对象
@@ -25,6 +26,8 @@ const receiveUser = (user) => ({type:RECEIVE_USER, data:user})
 const resetUser = (msg)=>({type:RESET_USER, data:msg})
 
 const receiveUserList = (userList) => ({ type: RECEIVE_USER_LIST, data: userList })
+
+const receiveMsgList = ({users, chatMsgs}) => ({type: RECEIVE_MEG_LIST, data:{users, chatMsgs}});
 
 export const register = (user) => {
     const {username, password,password2, type} = user;
@@ -98,8 +101,10 @@ export const updateUser = (user) => {
     }
 }
 
+
 // 获取用户列表的异步 action
 export const getUserList = (type) => {
+    initIO();
     return async (dispatch) => {
         // 执行异步 ajax 请求
         const response = await reqUserList(type);
@@ -107,6 +112,10 @@ export const getUserList = (type) => {
         if( result.code === 0 ) {
             // 获取到数据后，进行封装消息。 并派发消息。
             dispatch(receiveUserList(result.data));
+
+            // 此时开始获取 消息内容列表
+            // debugger
+            getMsgList(dispatch);
         }
     }
 }
@@ -116,11 +125,25 @@ export const sendMsg = ({ from, to, content }) => {
     return (dispatch) => {
         console.log({ from , to , content })
         // 发送消息的时候才进行连接， 其他时候离线也可以
-        initIO();
+        // initIO();
         // 发消息
         io.socket.emit('sendMsg', {from, to, content});
     }
+}
+
+// 获取用户消息内容列表, 是在加载过程中被调用。而不是暴露给外部被调用。
+async function getMsgList(dispatch) {
+    const response = await reqMsgList();  // 和 async 前缀搭配使用。
+    const result = response.data;
+    if( result.code == 0 ) {
+        // 有数据
+        // debugger
+        const { users, chatMsgs } = result.data;
+
+        dispatch(receiveMsgList({ users, chatMsgs }))
+    }
 
 }
+
 
 
