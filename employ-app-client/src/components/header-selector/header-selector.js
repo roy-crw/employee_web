@@ -23,7 +23,7 @@ export default class HeaderSelector extends Component {
         this.headerList =[];
         for( let i=1; i<11; i++) {
             this.headerList.push({
-                text:'头像'+i,
+                text:'o'+i,
                 icon: require('../../assets/images/header/o'+`${i}.png`)
             })
         }

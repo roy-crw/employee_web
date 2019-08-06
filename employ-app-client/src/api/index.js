@@ -20,3 +20,5 @@ export const reqMsgList =  () => ajax('/msglist',{}, 'POST');
 export const reqReadMsg = (from) => ajax('/readmsg', {from}, 'POST');
 
 
+
+

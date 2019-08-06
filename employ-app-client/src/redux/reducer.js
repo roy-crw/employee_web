@@ -63,7 +63,12 @@ function chat(state=initChat, action) {
             };
             return state;
         case RECEIVE_MSG:
-            return;
+            const chatMsg = action.data;
+            return {
+                users: state.users,
+                chatMsgs: [...state.chatMsgs, action.data], // 消息向后覆盖进去
+                unReadCount: 0
+            }
         default:
             return state;
     }
