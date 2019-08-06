@@ -29,35 +29,46 @@ class Chat extends Component {
     }
 
     render() {
+        const { user } = this.props;
+        const { users, chatMsgs } = this.props.chat;
 
+        const myId = user._id;
+        const targetId = this.props.match.params.userid;
 
+        const mychat_id = [myId, targetId].sort().join('_');
+        const msgs= chatMsgs.filter( chatMsg => chatMsg.chat_id == mychat_id );
+
+        // 找到对方头像, 如果对方资料未完善，就使用默认图片。
+        let header = users[user._id].header;
+        if(!header)
+            header = 'o1';
 
         return (
             <div id={'chat-page'}>
-                <NavBar>aa</NavBar>
+                <NavBar>对话窗口</NavBar>
                 <List>
-                    <Item
-                        thumb={ require('../../assets/images/header/o1.png') }
-                    >
-                        您好
-                    </Item>
-                    <Item
-                        thumb={ require('../../assets/images/header/o1.png') }
-                    >
-                        您好
-                    </Item>
-                    <Item
-                        className={'chat-me'}
-                        extra={ '我' }
-                    >
-                        你也好
-                    </Item>
-                    <Item
-                        className={'chat-me'}
-                        extra={ '我' }
-                    >
-                        你也好
-                    </Item>
+                    {
+                        msgs.map( msg => {
+                            if( msg.to === myId ) { // 对方发送的消息
+
+                                return (<Item
+                                    key = {msg._id}
+                                    thumb={ require(`../../assets/images/header/${header}.png`) }
+                                >
+                                    { msg.content }
+                                </Item>);
+                            } else { // 我发送的消息
+
+                                return (<Item
+                                    className={'chat-me'}
+                                    extra={ '我' }
+                                >
+                                    { msg.content }
+                                </Item>);
+                            }
+                        } )
+                    }
+
 
                     <div className={'am-tab-bar'}>
                         <InputItem
@@ -76,6 +87,6 @@ class Chat extends Component {
 }
 
 export default connect(
-    state => ({ user: state.user }),
+    state => ({ user: state.user, chat: state.chat }),
     { sendMsg }
 )(Chat);
