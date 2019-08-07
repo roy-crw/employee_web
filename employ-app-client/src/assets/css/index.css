@@ -27,3 +27,10 @@ am-tab-bar span{
     text-align: right;
 }
 
+.sticky-header { /* 使得标题始终在头部 */
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
