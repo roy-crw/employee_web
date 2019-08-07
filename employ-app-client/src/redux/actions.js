@@ -133,10 +133,11 @@ export const getUserList = (type) => {
 export const sendMsg = ({ from, to, content }) => {
 
     return (dispatch) => {
-        console.log({ from , to , content })
+        // console.log({ from , to , content })
         // 发送消息的时候才进行连接， 其他时候离线也可以
         // initIO();
         // 发消息
+        // alert(from+','+to+','+content);
         io.socket.emit('sendMsg', {from, to, content});
     }
 }
