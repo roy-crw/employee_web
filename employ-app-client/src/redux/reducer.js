@@ -55,19 +55,23 @@ const initChat = {
 function chat(state=initChat, action) {
     switch (action.type) {
         case RECEIVE_MEG_LIST:  // data: { users, chatMsgs }
-            const { users, chatMsgs } = action.data;
+            const { users, chatMsgs,myId } = action.data;
+            // debugger
+            // 这里记得 reducer 需要返回值。
+            const num =  chatMsgs.reduce( (preTotal, msg) =>  preTotal + (!msg.read&&msg.to === myId?1:0)  , 0 );
             state = {
                 users,
                 chatMsgs,
-                unReadCount: 0
+                unReadCount:num
+                // unReadCount: 70
             };
             return state;
         case RECEIVE_MSG:
-            const chatMsg = action.data;
+            const {chatMsg} = action.data;
             return {
                 users: state.users,
-                chatMsgs: [...state.chatMsgs, action.data], // 消息向后覆盖进去
-                unReadCount: 0
+                chatMsgs: [...state.chatMsgs, action.data], // 消息向后覆盖进去 // 手动引用 myId，避免声明冲突。
+                unReadCount: state.unReadCount + (!chatMsg.read&&chatMsg.to === action.data.myId?1:0)
             }
         default:
             return state;

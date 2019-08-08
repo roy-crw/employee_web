@@ -86,7 +86,7 @@ class Main extends Component {
         // 使用 componentDidMount() 来处理自动登录
 
         // 如果有， 读取 redux 中的 user 状态
-        const { user } = this.props;
+        const { user, unReadCount } = this.props;
 
         // debugger
         // 如果 user 没有 _id， 返回 null( 不做任何显示 )
@@ -133,14 +133,14 @@ class Main extends Component {
                     <Route path={'/chat/:userid'} component={Chat} />
                     <Route componen={NotFound} />
                 </Switch>
-                { currentNav ? <NavFooter  navList={navList} /> : null }
+                { currentNav ? <NavFooter  navList={navList} unReadCount={unReadCount} /> : null }
             </div>
         )
     }
 }
 
 export default connect(
-    state => ({ user: state.user }),
+    state => ({ user: state.user, unReadCount: state.chat.unReadCount }),
     {}
 )(Main);
 

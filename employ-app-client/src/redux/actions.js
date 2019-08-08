@@ -16,14 +16,12 @@ function initIO(dispatch, userid) {
     io.socket.on('receiveMsg', function (chatMsg) {
         console.log('连接并接受到消息:', chatMsg)
         // 过滤出与当前用户相关的消息
-        dispatch(receiveMsg(chatMsg));
+        dispatch(receiveMsg({chatMsg, myId:userid}));
         // if( userid === chatMsg.from || userid === chatMsg.to ) {
         //     dispatch(receiveMsg(chatMsg));
         // }
 
     })
-
-
 }
 
 const authSuccess = (user) => ({ type: AUTH_SUCCESS, data: user })
@@ -35,9 +33,9 @@ const resetUser = (msg)=>({type:RESET_USER, data:msg})
 
 const receiveUserList = (userList) => ({ type: RECEIVE_USER_LIST, data: userList })
 
-const receiveMsgList = ({users, chatMsgs}) => ({type: RECEIVE_MEG_LIST, data:{users, chatMsgs}});
+const receiveMsgList = ({users, chatMsgs, myId}) => ({type: RECEIVE_MEG_LIST, data:{users, chatMsgs, myId}});
 
-const receiveMsg = ( chatMsg ) => ({ type: RECEIVE_MSG, data: chatMsg })
+const receiveMsg = ( chatMsg, myId ) => ({ type: RECEIVE_MSG, data: {chatMsg,myId} })
 
 export const register = (user) => {
     const {username, password,password2, type} = user;
@@ -88,6 +86,9 @@ export const login = (user) => {
         const result = response.data;
         if( result.code === 0 ) { // 成功
             dispatch(authSuccess(result.data))
+            debugger
+            getMsgList(dispatch, result.data._id);
+
         } else { // 失败
             dispatch(errorMsg(result.data))
         }
@@ -125,7 +126,7 @@ export const getUserList = (type) => {
 
             // 此时开始获取 消息内容列表
             // debugger
-            getMsgList(dispatch, result.data._id);
+            // getMsgList(dispatch, result.data._id);
         }
     }
 }
@@ -154,7 +155,7 @@ async function getMsgList(dispatch, userid) {
         // debugger
         const { users, chatMsgs } = result.data;
 
-        dispatch(receiveMsgList({ users, chatMsgs }))
+        dispatch(receiveMsgList({ users, chatMsgs, myId: userid }))
     }
 
 }

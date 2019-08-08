@@ -12,7 +12,7 @@ const Item = List.Item;
 const Brief = Item.Brief;
 
 // 过滤数据源，返回最新的对话数据
-function  getLastMsgs(chatMsgs) {
+function  getLastMsgs(chatMsgs, userid) {
     /*const chats = {};
     chatMsgs.forEach( msg => { //
         chats[msg._id] = msg;
@@ -21,18 +21,30 @@ function  getLastMsgs(chatMsgs) {
 
     const lastMsgObj = {};
     chatMsgs.forEach( msg => {
+        /* 对 msg 进行个体统计 */
+        /* 每个 msg 只代表一个消息，而 unreadCount 是代表每组对话中，所未读的消息。 */
+        msg.unReadCount = 0;
+        if( msg.to === userid && !msg.read ) { // 发送给我，并且未读
+            msg.unReadCount = 1; // 代表当前这个消息的状态
+        } else {
+            msg.unReadCount = 0;
+        }
+
         const chatid = msg.chat_id;
         let lastMsg = lastMsgObj[chatid];
 
         if( !lastMsg ) {
-            lastMsgObj[msg.chatId] = msg;
+            lastMsgObj[chatid] = msg;
         } else {
+            // msg.unReadCount += lastMsgObj[msg.chatId]; // 替换前先累加上之前统计组中的未读消息数量。
+            msg.unReadCount += lastMsg.unReadCount;
             if( msg.create_time > lastMsg.create_time ) { /* 需要不断比较最新消息的发生时间 */
                 lastMsgObj[chatid] = msg;
             }
+
         }
     } )
-
+    // debugger
     // 将 lastMsgObj 最新列表对象 转化为 数组
     const lastMsgs = Object.values( lastMsgObj );
 
@@ -50,7 +62,7 @@ function  getLastMsgs(chatMsgs) {
         const {users, chatMsgs} = this.props.chat;
 
         // 只需要保留最新的对话数据
-        const lastMsgs = getLastMsgs(chatMsgs);
+        const lastMsgs = getLastMsgs(chatMsgs, user._id);
 
         console.log(lastMsgs);
 
@@ -65,7 +77,7 @@ function  getLastMsgs(chatMsgs) {
                         const targetUser = users[targetId];
                         return (
                             <Item
-                                extra={< Badge text={1} />}
+                                extra={< Badge text={msg.unReadCount} />}
                                 thumb={require(`../../assets/images/header/${targetUser.header}.png`)}
                                 arrow={'horizontal'}
                                 onClick={ ()=> this.props.history.push(`/chat/${targetId}`) }
